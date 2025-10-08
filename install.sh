@@ -8,7 +8,6 @@ fi
 
 echo "Running as root, continuing..."
 
-settmp=$(mktemp)
 for i in {1..10}; do echo "" >> $settmp; done
 
 make_script(){
@@ -192,23 +191,9 @@ while true; do
             line_number=1
             while true; do
                read -p "Enter your node number: " mynode
-               echo "Local node will be set to $mynode."
-               total_lines=$(wc -l < "$settmp")
-
+               
             if [[ "$mynode" =~ ^[0-9]+$ ]]; then
-                if (( line_number <= total_lines )); then
-                    # Line exists — replace it
-                    sed -i "${line_number}s/.*/$mynode/" "$settmp"
-                    break
-                else
-                    # Line doesn't exist — append blank lines and the new line
-                    while (( total_lines < line_number - 1 )); do
-                        echo "" >> "$settmp"
-                        ((total_lines++))
-                        echo "$mynode" >> "$settmp"
-                    done
-                    break
-                fi
+               echo "Local node will be set to $mynode."
             else
                 echo "Invalid input. Please enter a valid number."
             fi
@@ -220,23 +205,9 @@ while true; do
             line_number=2
             while true; do
                read -p "Enter the remote node number: " remnode
-               echo "Remote node will be set to $remnode."
-               total_lines=$(wc -l < "$settmp")
-
+               
             if [[ "$remnode" =~ ^[0-9]+$ ]]; then
-                if (( line_number <= total_lines )); then
-                    # Line exists — replace it
-                    sed -i "${line_number}s/.*/$remnode/" "$settmp"
-                    break
-                else
-                    # Line doesn't exist — append blank lines and the new line
-                    while (( total_lines < line_number - 1 )); do
-                        echo "" >> "$settmp"
-                        ((total_lines++))
-                        echo "$remnode" >> "$settmp"
-                    done
-                    break
-                fi
+               echo "Remote node will be set to $remnode."
             else
                 echo "Invalid input. Please enter a valid number."
             fi
@@ -249,29 +220,12 @@ while true; do
             while true; do
                logdetail=""
                read -p "Write to log file every check (1) or just when disconnected (0)?: " logdetail
-               total_lines=$(wc -l < "$settmp")
-                
-                if [[ "$logdetail" =~ ^[0-9]+$ ]]; then
-                    if [[ "$logdetail" == "0" || "$logdetail" == "1" ]]; then
-                        if (( line_number <= total_lines )); then
-                            # Line exists — replace it
-                            sed -i "${line_number}s/.*/$logdetail/" "$settmp"
-                            break
-                        else
-                            # Line doesn't exist — append blank lines and the new line
-                            while (( total_lines < line_number - 1 )); do
-                                echo "" >> "$settmp"
-                                ((total_lines++))
-                                echo "$logdetail" >> "$settmp"
-                            done
-                            break
-                        fi
-                    else
-                        echo "Invalid input. Please enter 0 or 1."
-                    fi
-                else
-                    echo "Invalid input. Please enter a valid number."
-                fi
+               
+               if [[ "$logdetail" =~ ^[0-1]+$ ]]; then
+                    echo "Log detail is will be set to $logdetail"
+               else
+                    echo "Invalid input. Please enter 0 or 1."
+               fi
 
             done
             sleep 1
@@ -280,23 +234,13 @@ while true; do
             line_number=4
             while true; do
                read -p "What interval, in minutes, should the connection check run? " runint
-               echo "Script will be configured to run every $runint minute(s)"
-               total_lines=$(wc -l < "$settmp")
-
-            if (( line_number <= total_lines )); then
-                # Line exists — replace it
-                sed -i "${line_number}s/.*/$runint/" "$settmp"
-                break
-            else
-                # Line doesn't exist — append blank lines and the new line
-                while (( total_lines < line_number - 1 )); do
-                    echo "" >> "$settmp"
-                    ((total_lines++))
-                    echo "$runint" >> "$settmp"
-                done
-                break
-            fi
-
+                              
+               if [[ "$runint" =~ ^[0-9]+$ ]]; then
+                    echo "Script will be configured to run every $runint minute(s)"
+               else
+                    echo "Invalid input. Please enter a valid number."
+               fi
+            
             done
             sleep 1
             ;;    
@@ -304,6 +248,32 @@ while true; do
             mkdir /var/spool/cron
             mkdir /srv/http
             
+            echo "Your node will be configured as $mynode"
+            echo "The remote node will be configured as $remnode"
+            echo "The cron job will run every $runint minutes"
+
+            if $logdetail = 1; then
+                echo "The cron will write to the log file only"
+                echo "for disconnects and reconnect attempts."
+            else
+                echo "The cron will write to the log file"
+                echo "every time the cron job is run."
+            fi
+            echo " "
+
+            read -r -n 1 key
+
+            # Check if Enter was pressed (i.e., key is empty)
+            if [[ -z "$key" ]]; then
+                echo "Continuing..."
+
+            else
+                echo "installation cancelled."
+                sleep 2
+                break
+
+            fi
+
             echo "Creating run script..."
             make_script
             sleep 4
@@ -342,8 +312,7 @@ while true; do
             echo "Reboot when finished."
 
             read -p "Press Enter to continue."
-
-            rm $settmp
+            
             break
             ;;
         *)
