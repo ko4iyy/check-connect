@@ -1,5 +1,16 @@
 #!/bin/bash
-
+        ##################################
+        ####  2025 -  KO4IYY          ####
+        ####         Steve Clay       ####
+        ####       steve@ko4iyy.com   ####
+        ####          V 1.5           ####
+        ####  Installation to test    ####
+        ####  if asterisk is conected ####
+        ####  to your remote node.    ####
+        ####  Used for East Coast     ####
+        ####  Reflector connection    ####
+        ####  via Raspberry Pi        ####
+        ##################################
 # Check if running as root
 if [[ $EUID -ne 0 ]]; then
   echo "This script must be run as root." >&2
