@@ -7,7 +7,7 @@ This program will install and configure a service for Asterisk to monitor your r
 
 This file was made for and tested on a Raspberry PI4 running Archlinux, but may work on other linux platforms running Allstar to connect to other nodes; with some minor tweaks.
 
-Run install as root or as sudo.
+Run install as root or as sudo. (sudo bash install.sh)
 Run down the menu items in order
 1 - Enter the numerical value for you Allstar node
 2 - Enter the numerical value of the Allstar node you are connecting to
