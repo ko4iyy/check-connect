@@ -1,7 +1,6 @@
 # check-connect
 Installation and configuration scripts for asterisk connection monitoring and logging
 KO4IYY
-Steve Clay
 steve@ko4iyy.com
 
 This program will install and configure a service for Asterisk to monitor your remote connection.  If it drops, it will try and reconnect to the configured node, and will write results to a log file.  It also builds a simple html page to view the local supermon page, the remote ECR connection, and display the log file.
