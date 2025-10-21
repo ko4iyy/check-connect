@@ -36,6 +36,6 @@ Run down the menu items in order
 
 Note that one more manual change is needed to /etc/asterisk/rpt.conf:
 
-	Find the line "startup_macro = *73"
+	Find the line "startup_macro = *7"
 	
-	Add a line below it so it reads "startup_macro = *73XXXXX" [no quotes] and where XXXX is the remote node you are connecting to that you configured in step 2 of the installation program.
+	Add a line below it so it reads "startup_macro = *73XXXXX" [no quotes] and where XXXX is the remote node you are connecting to that you configured in step 2 of the installation program. The '3' means to create a permanent link.
