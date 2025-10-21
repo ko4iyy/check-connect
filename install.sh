@@ -3,7 +3,7 @@
         ####  2025 -  KO4IYY          ####
         ####         Steve Clay       ####
         ####       steve@ko4iyy.com   ####
-        ####          V 1.5           ####
+        ####          V 1.6           ####
         ####  Installation to test    ####
         ####  if asterisk is conected ####
         ####  to your remote node.    ####
@@ -29,7 +29,7 @@ make_script(){
         ####  2025 -  KO4IYY          ####
         ####         Steve Clay       ####
         ####       steve@ko4iyy.com   ####
-        ####          V 1.5           ####
+        ####          V 1.6           ####
         ####  Simple script to check  ####
         ####  if asterisk is conected ####
         ####  to your remote node.    ####
@@ -74,26 +74,44 @@ make_script(){
                 CHK=$(asterisk -rx "rpt nodes "$MYSITE"" | grep -c "$REMSITE")
 
                 if [ "$CHK" = "0" ]
-                then
-                        echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        echo "You are DISCONNECTED to hub node "$REMSITE"" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        echo "Attempting to RECONNECT to $REMSITE...." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        asterisk -rx "rpt cmd "$mynode" ilink 3 "$REMSITE""
-                        CHK=$(asterisk -rx "rpt nodes "$MYSITE"" | grep -c "$REMSITE")
+        then
+             echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             echo "Attempting to RECONNECT to $REMSITE...." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             echo "You are DISCONNECTED from hub node "$REMSITE"" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             asterisk -rx "rpt cmd 59808 ilink 3 "$REMSITE""
+        fi
 
-                        if [ "$CHK" = "1" ]
-                        then
-                                echo "Reconnect successful. Your node "$MYSITE" is now connected to ECR node "$REMSITE"." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        else
-                                echo "Reconnect unsuccessful.  I will retry next time this file is called." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        fi
+        CHK=$(asterisk -rx "rpt nodes "$MYSITE"" | grep -c "$REMSITE")
 
-                        echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                
+        if [ "$CHK" = "0" ]
+        then
+             echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             echo "Reconnect unsuccessful.  I will retry next time this file is called." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+             echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+        fi
+
+        if [ "$CHK" = "1" ]
+        then
+                # Wait until the top of the next hour
+                if [[ $(date +%M%S) == "0000" ]]; then
+
+                    TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+
+                    echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                    echo "You remained connected to ECR node "$REMSITE"." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                    TIMESTAMP | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                    echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                    echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                    echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
                 fi
+        fi
 
-        fi" > /var/spool/cron/check_connect.sh
+    fi" > /var/spool/cron/check_connect.sh
 
 }
 
