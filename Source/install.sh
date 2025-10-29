@@ -29,7 +29,7 @@ make_script(){
         ####  2025 -  KO4IYY          ####
         ####         Steve Clay       ####
         ####       steve@ko4iyy.com   ####
-        ####          V 1.6           ####
+        ####          V 1.7           ####
         ####  Simple script to check  ####
         ####  if asterisk is conected ####
         ####  to your remote node.    ####
@@ -43,70 +43,55 @@ make_script(){
         LOGFILE="/srv/http/checkConnect.log"   # I use this to display a refreshed logfile on the web page to keep an eye on disconnects/reconnects.
         LOGRECONLY="$logdetail"
 
-        # You shouldn't have to change anything below
-        #############################################
-        touch "$LOGFILE"
-        touch /tmp/chkTemp
-        tmpLog="/tmp/chkTemp"
+# You shouldn't have to change anything below
+#############################################
+touch "$LOGFILE"
 
-        # set up log file and configure settings
+# Sets up a tmp log file to reorganize so newer entries are on top
+tmpLog="/tmp/chkTemp"
 
-        if [ "$LOGRECONLY" = "0" ]
-        then
-                echo "#############################"  | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                CHK=""
-                echo "Checking if connected to hub node "$REMSITE"" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                CHK=$(asterisk -rx "rpt nodes "$MYSITE"" | grep -c "$REMSITE")
+# Get status of our connection
 
-                if [ "$CHK" = "0" ]
-                then
-                        echo "Reconnecting to $REMSITE...." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        asterisk -rx "rpt cmd "$MYSITE" ilink "$REMSITE""
-                else
-                        echo "You are already connected to $REMSITE." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                fi
+CHK=$(asterisk -rx "rpt nodes "$MYSITE"" | grep -c "$REMSITE")
 
+
+case "$LOGRECONLY" in
+
+        0)
+            # Write to the log file every time this scipt is run
+            echo "#############################"  | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+            date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+            echo "Checking if connected to hub node "$REMSITE"" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+
+            if [ "$CHK" = "0" ]
+            then
                 echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-
-        else
-                CHK=""
-                CHK=$(asterisk -rx "rpt nodes "$MYSITE"" | grep -c "$REMSITE")
-
-                if [ "$CHK" = "0" ]
-        then
-             echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             echo "Attempting to RECONNECT to $REMSITE...." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             echo "You are DISCONNECTED from hub node "$REMSITE"" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             asterisk -rx "rpt cmd 59808 ilink 3 "$REMSITE""
-        fi
-
-        CHK=$(asterisk -rx "rpt nodes "$MYSITE"" | grep -c "$REMSITE")
-
-        if [ "$CHK" = "0" ]
-        then
-             echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             echo "Reconnect unsuccessful.  I will retry next time this file is called." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-             echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-        fi
-
-        f [ "$CHK" = "1" ]
-        then
-                        echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        echo "You remained connected to ECR node "$REMSITE"." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                        echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-        fi
-
-
-    fi" > /var/spool/cron/check_connect.sh
+                echo "Attempting to RECONNECT to $REMSITE...." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                echo "You are DISCONNECTED from hub node "$REMSITE"" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                asterisk -rx "rpt cmd "$MYSITE" ilink 3 "$REMSITE""
+            else
+                echo "You are already connected to $REMSITE." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+            fi
+            ;;
+        1)
+            # Write to the log file only when disconnected
+            if [ "$CHK" = "0" ]
+           then
+                echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                echo "Attempting to RECONNECT to $REMSITE...." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                echo "You are DISCONNECTED from hub node "$REMSITE"" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                asterisk -rx "rpt cmd "$MYSITE" ilink 3 "$REMSITE""
+            fi
+            ;;
+        *)
+            ;;
+esac" > /var/spool/cron/check_connect.sh
 
 }
 
