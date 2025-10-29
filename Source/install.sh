@@ -3,7 +3,7 @@
         ####  2025 -  KO4IYY          ####
         ####         Steve Clay       ####
         ####       steve@ko4iyy.com   ####
-        ####          V 1.6           ####
+        ####          V 1.7           ####
         ####  Installation to test    ####
         ####  if asterisk is conected ####
         ####  to your remote node.    ####
