@@ -95,21 +95,16 @@ make_script(){
              echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
         fi
 
-        if [ "$CHK" = "1" ]
+        f [ "$CHK" = "1" ]
         then
-                # Wait until the top of the next hour
-                if [[ $(date +%M%S) == "0000" ]]; then
-
-                    TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
-
-                    echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                    echo "You remained connected to ECR node "$REMSITE"." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                    TIMESTAMP | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                    echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                    echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                    echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
-                fi
+                        echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                        echo "You remained connected to ECR node "$REMSITE"." | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                        date "+%m-%d-%Y %H:%M:%S" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                        echo "#############################" | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                        echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
+                        echo " " | cat - "$LOGFILE" > "$tmpLog" && mv "$tmpLog" "$LOGFILE"
         fi
+
 
     fi" > /var/spool/cron/check_connect.sh
 
