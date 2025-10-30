@@ -55,6 +55,7 @@ tmpLog="/tmp/chkTemp"
 CHK=$(asterisk -rx "rpt nodes "$MYSITE"" | grep -c "$REMSITE")
 
 
+
 case "$LOGRECONLY" in
 
         0)
