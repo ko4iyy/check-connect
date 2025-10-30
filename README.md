@@ -4,16 +4,16 @@ Installation and configuration scripts for asterisk connection monitoring and lo
 KO4IYY
 steve@ko4iyy.com
 
-Make sure install is executable with chmod.
+Make sure install is executable with chmod. (i.e. sudo chmod 755 ./install)
 
-You can just run "sudo ./install" or "sudo bash ./install.sh"
+Just run "sudo ./install"
 
 This program will install and configure a service for Asterisk to monitor your remote connection.  If it drops, it will try and reconnect to the configured node, and will write results to a log file.  It also builds a simple html page to view the local supermon page, the remote ECR connection, and display the log file.
 
 This file was made for and tested on a Raspberry PI4 running Archlinux, but may work on other linux platforms running Allstar to connect to other nodes; with some minor tweaks.
 
 
-Run install as root or as sudo. (sudo bash install.sh)
+Run install as root or as sudo. (sudo ./install)
 
 Run down the menu items in order
 
